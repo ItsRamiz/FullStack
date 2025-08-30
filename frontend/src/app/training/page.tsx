@@ -76,9 +76,23 @@ export default function TrainingPage() {
     console.log('Loading configuration');
   };
 
-  const handleTrainModel = () => {
-    // Train model logic
-    console.log('Starting training with:', formData);
+  const handleTrainModel = async () => {
+    try {
+      //console.log('Starting training with:', formData);
+  
+      const response = await fetch("http://localhost:5001/train", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      const data = await response.json();
+      console.log("Backend response:", data);
+    } catch (error) {
+      console.error("Error sending training request:", error);
+    }
   };
 
   return (
