@@ -93,10 +93,10 @@ export default function Home() {
               <PlayIcon />
               <span>Train Model</span>
             </Link>
-            <button className="border-2 border-gray-900 text-gray-900 px-8 py-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2">
+            <Link href="/visualize" className="border-2 border-gray-900 text-gray-900 px-8 py-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2">
               <ChartIcon />
               <span>Visualize</span>
-            </button>
+            </Link>
           </div>
         </div>
       </section>

@@ -48,6 +48,8 @@ const InfoIcon = () => (
 
 export default function TrainingPage() {
   const [formData, setFormData] = useState({
+    modelName: '',
+    modelType: 'MiniGrid-BlockedUnlockPickup-v0',
     epochs: '100',
     framesPerProcess: '128',
     learningRate: '0.001',
@@ -58,6 +60,10 @@ export default function TrainingPage() {
     gaeLambda: '0.95',
     valueLossCoefficient: '0.5'
   });
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [gifUrl, setGifUrl] = useState('');
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -78,7 +84,8 @@ export default function TrainingPage() {
 
   const handleTrainModel = async () => {
     try {
-      //console.log('Starting training with:', formData);
+      setIsLoading(true);
+      console.log('Starting training with:', formData);
   
       const response = await fetch("http://localhost:5001/train", {
         method: "POST",
@@ -90,9 +97,24 @@ export default function TrainingPage() {
   
       const data = await response.json();
       console.log("Backend response:", data);
+      
+      // Always show modal with response data
+      setGifUrl(data.gifUrl || '');
+      setShowModal(true);
+      
     } catch (error) {
       console.error("Error sending training request:", error);
+      // Show error in modal
+      setGifUrl('');
+      setShowModal(true);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setGifUrl('');
   };
 
   return (
@@ -157,6 +179,34 @@ export default function TrainingPage() {
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Left Column */}
             <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Model Name
+                </label>
+                <input
+                  type="text"
+                  value={formData.modelName}
+                  onChange={(e) => handleInputChange('modelName', e.target.value)}
+                  placeholder="Enter model name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <p className="text-sm text-gray-500 mt-1">Name for your training model.</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Model Type
+                </label>
+                <select
+                  value={formData.modelType}
+                  onChange={(e) => handleInputChange('modelType', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="MiniGrid-BlockedUnlockPickup-v0">MinigridUnlock</option>
+                </select>
+                <p className="text-sm text-gray-500 mt-1">Type of model to train.</p>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Epochs
@@ -297,10 +347,24 @@ export default function TrainingPage() {
             </button>
             <button
               onClick={handleTrainModel}
-              className="flex items-center justify-center space-x-2 px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+              disabled={isLoading}
+              className={`flex items-center justify-center space-x-2 px-6 py-3 rounded-lg transition-colors ${
+                isLoading 
+                  ? 'bg-gray-400 text-white cursor-not-allowed' 
+                  : 'bg-gray-900 text-white hover:bg-gray-800'
+              }`}
             >
-              <PlayIcon />
-              <span>Train Model</span>
+              {isLoading ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <span>Training...</span>
+                </>
+              ) : (
+                <>
+                  <PlayIcon />
+                  <span>Train Model</span>
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -316,11 +380,61 @@ export default function TrainingPage() {
                 Training Status
               </h3>
               <p className="text-blue-700">
-                Ready to start training. Configure parameters above and click "Train Model".
+                {isLoading 
+                  ? "Training in progress... Please wait." 
+                  : "Ready to start training. Configure parameters above and click 'Train Model'."
+                }
               </p>
             </div>
           </div>
         </div>
+
+        {/* GIF Response Modal */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 relative">
+              {/* Close Button */}
+              <button
+                onClick={closeModal}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              >
+                ×
+              </button>
+              
+              {/* Modal Content */}
+              <div className="text-center">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                  Training Response
+                </h3>
+                {gifUrl ? (
+                  <>
+                    <div className="mb-4">
+                      <img 
+                        src={gifUrl} 
+                        alt="Training Response" 
+                        className="max-w-full h-auto rounded-lg shadow-lg"
+                      />
+                    </div>
+                    <p className="text-gray-600">
+                      Your training request has been processed successfully!
+                    </p>
+                  </>
+                ) : (
+                  <div className="mb-4">
+                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <p className="text-gray-600">
+                      Training request sent successfully! Check your backend for processing status.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

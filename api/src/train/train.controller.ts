@@ -25,6 +25,10 @@ export class TrainController {
   
       return {
         message: "Training started",
+        job_id,
+        received: body,
+        pythonResponse: pythonResponse.data,
+        gifUrl: pythonResponse.data.gifUrl || null
       };
     }
   }
