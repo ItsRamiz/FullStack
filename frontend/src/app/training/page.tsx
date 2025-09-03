@@ -94,6 +94,9 @@ export default function TrainingPage() {
         },
         body: JSON.stringify(formData),
       });
+
+
+      console.log("Finished Training ----#####");
   
       const data = await response.json();
       console.log("Backend response:", data);

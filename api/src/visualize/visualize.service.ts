@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import { TrainService } from '../train/train.service';
 
 @Injectable()
 export class VisualizeService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly trainService: TrainService
+  ) {}
 
   async refreshData() {
     try {
@@ -24,11 +28,21 @@ export class VisualizeService {
 
   async generateVisualization(selectedName: string) {
     try {
-      // Call the Python backend to generate visualization
+
+      let job_id = this.trainService.generateJobId();
+
+      const payload = { selectedName, job_id };
+      
       const response = await firstValueFrom(
-        this.httpService.post('http://127.0.0.1:5002/generate', { selectedName })
+        this.httpService.post('http://127.0.0.1:5002/visualize', payload)
       );
-      return response.data;  // This should return {"gifUrl": "..."}
+
+      let gifUrl = `http://127.0.0.1:5001/gif/${job_id}.gif`;
+
+
+      return {"gifUrl": gifUrl};  // This should return {"gifUrl": "..."}
+
+
     } catch (error) {
       console.error('Error generating visualization:', error);
       // Return mock response if Python backend fails

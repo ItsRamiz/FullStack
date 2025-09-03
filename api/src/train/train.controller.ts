@@ -22,9 +22,11 @@ export class TrainController {
       const pythonResponse = await firstValueFrom(
         this.httpService.post('http://127.0.0.1:5002/run', payload)
       );
+
+      console.log("API - Training Finished ----#####");
   
       return {
-        message: "Training started",
+        message: "Training Finished",
         job_id,
         received: body,
         pythonResponse: pythonResponse.data,
