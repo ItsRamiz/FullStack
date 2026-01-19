@@ -18,7 +18,7 @@ def generate():
 
     cmd = [
         "python", "-m", "scripts.visualize",
-        "--env", env,
+        "--env", "MiniGrid-Unlock-v0",
         "--model", selected_name,
         "--gif" , job_id
     ]

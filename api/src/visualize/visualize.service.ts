@@ -12,16 +12,14 @@ export class VisualizeService {
 
   async refreshData() {
     try {
-      // Call the Python backend
       const response = await firstValueFrom(
         this.httpService.get('http://127.0.0.1:5002/refresh')
       );
-      return response.data;  // This will return {"names": ["Alice", "Bob"]}
+      return response.data; 
     } catch (error) {
       console.error('Error calling Python backend:', error);
-      // Fallback to mock data if Python backend fails
       return {
-        names: ['Alice Johnson', 'Bob Smith', 'Carol Davis', 'David Wilson', 'Eva Brown']
+        names: ['Error', 'Connecting', 'To', 'Backend', ':(']
       };
     }
   }
@@ -40,12 +38,11 @@ export class VisualizeService {
       let gifUrl = `http://127.0.0.1:5001/gif/${job_id}.gif`;
 
 
-      return {"gifUrl": gifUrl};  // This should return {"gifUrl": "..."}
+      return {"gifUrl": gifUrl};
 
 
     } catch (error) {
       console.error('Error generating visualization:', error);
-      // Return mock response if Python backend fails
       return {
         message: 'Visualization generation failed',
         selectedName,

@@ -12,25 +12,8 @@ export class TrainController {
     ) {}
 
     @Post()
-    async root(@Body() body: any) {  // 👈 make async
+    async root(@Body() body: any) {
 
-      console.log("Connected to Backend!");
-
-      const job_id = this.trainService.generateJobId();
-      const payload = { ...body , job_id}
-  
-      const pythonResponse = await firstValueFrom(
-        this.httpService.post('http://127.0.0.1:5002/run', payload)
-      );
-
-      console.log("API - Training Finished ----#####");
-  
-      return {
-        message: "Training Finished",
-        job_id,
-        received: body,
-        pythonResponse: pythonResponse.data,
-        gifUrl: pythonResponse.data.gifUrl || null
-      };
+      return this.trainService.sendTrainRequest(body);
     }
   }

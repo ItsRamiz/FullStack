@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import TrainingStatus from './components/TrainingStatus';
+import NavigationBar from './components/NavBar';
 
 // SVG Icons as components
 const BrainIcon = () => (
@@ -134,13 +136,7 @@ export default function TrainingPage() {
               <span className="text-xl font-bold text-gray-900">ML Training Platform</span>
             </div>
             
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <Link href="/" className="text-gray-700 hover:text-gray-900 font-medium">Dashboard</Link>
-              <a href="#" className="text-gray-700 hover:text-gray-900 font-medium">Models</a>
-              <a href="/training" className="text-gray-900 font-semibold border-b-2 border-gray-900">Training</a>
-              <a href="#" className="text-gray-700 hover:text-gray-900 font-medium">Settings</a>
-            </nav>
+            <NavigationBar></NavigationBar>
             
             {/* Notifications and User Profile */}
             <div className="flex items-center space-x-4">
@@ -372,25 +368,8 @@ export default function TrainingPage() {
           </div>
         </div>
 
-        {/* Training Status */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <div className="flex items-start space-x-3">
-            <div className="flex-shrink-0">
-              <InfoIcon />
-            </div>
-            <div>
-              <h3 className="text-lg font-medium text-blue-900 mb-1">
-                Training Status
-              </h3>
-              <p className="text-blue-700">
-                {isLoading 
-                  ? "Training in progress... Please wait." 
-                  : "Ready to start training. Configure parameters above and click 'Train Model'."
-                }
-              </p>
-            </div>
-          </div>
-        </div>
+        {/* Training Status - Blue Box at the bottom of /training*/}
+        <TrainingStatus isLoading={isLoading} />
 
         {/* GIF Response Modal */}
         {showModal && (
@@ -430,7 +409,7 @@ export default function TrainingPage() {
                       </svg>
                     </div>
                     <p className="text-gray-600">
-                      Training request sent successfully! Check your backend for processing status.
+                      Training request completed successfully!.
                     </p>
                   </div>
                 )}
